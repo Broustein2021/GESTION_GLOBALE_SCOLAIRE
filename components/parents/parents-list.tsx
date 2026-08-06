@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -59,8 +59,8 @@ function ParentFormDialog({
           </DialogTitle>
           <DialogDescription>
             {saved
-              ? 'Enregistré en mode maquette — les données ne sont pas encore persistées.'
-              : 'Renseignez les informations du parent ou du tuteur légal.'}
+              ? 'EnregistrÃ© en mode maquette â€” les donnÃ©es ne sont pas encore persistÃ©es.'
+              : 'Renseignez les informations du parent ou du tuteur lÃ©gal.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -69,22 +69,22 @@ function ParentFormDialog({
             <Input id="p-nom" defaultValue={parent?.nom} placeholder="Kouadio" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="p-prenoms">Prénoms</Label>
+            <Label htmlFor="p-prenoms">PrÃ©noms</Label>
             <Input
               id="p-prenoms"
               defaultValue={parent?.prenoms}
-              placeholder="Émile"
+              placeholder="Ã‰mile"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="p-lien">Lien de parenté</Label>
-            <Select defaultValue={parent?.lien ?? 'Père'}>
+            <Label htmlFor="p-lien">Lien de parentÃ©</Label>
+            <Select defaultValue={parent?.lien ?? 'PÃ¨re'}>
               <SelectTrigger id="p-lien">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Père">Père</SelectItem>
-                <SelectItem value="Mère">Mère</SelectItem>
+                <SelectItem value="PÃ¨re">PÃ¨re</SelectItem>
+                <SelectItem value="MÃ¨re">MÃ¨re</SelectItem>
                 <SelectItem value="Tuteur">Tuteur</SelectItem>
               </SelectContent>
             </Select>
@@ -94,11 +94,11 @@ function ParentFormDialog({
             <Input
               id="p-prof"
               defaultValue={parent?.profession}
-              placeholder="Ingénieur"
+              placeholder="IngÃ©nieur"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="p-tel">Téléphone</Label>
+            <Label htmlFor="p-tel">TÃ©lÃ©phone</Label>
             <Input
               id="p-tel"
               defaultValue={parent?.telephone}
@@ -120,7 +120,7 @@ function ParentFormDialog({
             Annuler
           </Button>
           <Button onClick={() => setSaved(true)} disabled={saved}>
-            {saved ? 'Enregistré' : 'Enregistrer'}
+            {saved ? 'EnregistrÃ©' : 'Enregistrer'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -154,19 +154,19 @@ export function ParentsList() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Rechercher un responsable (nom, téléphone, email)..."
+              placeholder="Rechercher un responsable (nom, tÃ©lÃ©phone, email)..."
               className="pl-8"
               aria-label="Rechercher un responsable"
             />
           </div>
-          <Select value={lien} onValueChange={setLien}>
+          <Select value={lien} onValueChange={(value) => setLien(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Lien" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tous">Tous les liens</SelectItem>
-              <SelectItem value="Père">Père</SelectItem>
-              <SelectItem value="Mère">Mère</SelectItem>
+              <SelectItem value="PÃ¨re">PÃ¨re</SelectItem>
+              <SelectItem value="MÃ¨re">MÃ¨re</SelectItem>
               <SelectItem value="Tuteur">Tuteur</SelectItem>
             </SelectContent>
           </Select>
@@ -178,8 +178,8 @@ export function ParentsList() {
           <CardContent className="p-0">
             <EmptyState
               icon={Contact}
-              title="Aucun responsable trouvé"
-              description="Commencez par ajouter votre premier parent ou tuteur légal."
+              title="Aucun responsable trouvÃ©"
+              description="Commencez par ajouter votre premier parent ou tuteur lÃ©gal."
             >
               <ParentFormDialog
                 trigger={
@@ -211,7 +211,7 @@ export function ParentsList() {
                           {p.prenoms} {p.nom}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {p.lien} — {p.profession}
+                          {p.lien} â€” {p.profession}
                         </span>
                       </div>
                     </div>
@@ -239,13 +239,13 @@ export function ParentsList() {
                   <div className="flex flex-col gap-2 border-t pt-3">
                     <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
                       <Users className="size-3.5" />
-                      {enfants.length} enfant{enfants.length > 1 ? 's' : ''} scolarisé
+                      {enfants.length} enfant{enfants.length > 1 ? 's' : ''} scolarisÃ©
                       {enfants.length > 1 ? 's' : ''}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {enfants.length === 0 ? (
                         <span className="text-sm text-muted-foreground">
-                          Aucun enfant associé.
+                          Aucun enfant associÃ©.
                         </span>
                       ) : (
                         enfants.map((e) => (
@@ -282,7 +282,7 @@ export function ParentsList() {
                         nativeButton={false}
                         render={<Link href={`/eleves/${enfants[0]!.id}`} />}
                       >
-                        Voir la fiche élève
+                        Voir la fiche Ã©lÃ¨ve
                       </Button>
                     ) : null}
                   </div>
@@ -297,3 +297,4 @@ export function ParentsList() {
 }
 
 export { ParentFormDialog }
+

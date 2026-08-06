@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -66,7 +66,7 @@ export function ElevesTable() {
               className="pl-8"
             />
           </div>
-          <Select value={niveau} onValueChange={setNiveau}>
+          <Select value={niveau} onValueChange={(value) => setNiveau(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Niveau" />
             </SelectTrigger>
@@ -79,13 +79,13 @@ export function ElevesTable() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={statutPaiement} onValueChange={setStatutPaiement}>
+          <Select value={statutPaiement} onValueChange={(value) => setStatutPaiement(value ?? '')}>
             <SelectTrigger className="w-full sm:w-44">
               <SelectValue placeholder="Paiement" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tous">Tout paiement</SelectItem>
-              <SelectItem value="a_jour">À jour</SelectItem>
+              <SelectItem value="a_jour">Ã€ jour</SelectItem>
               <SelectItem value="partiel">Partiel</SelectItem>
               <SelectItem value="retard">En retard</SelectItem>
             </SelectContent>
@@ -93,14 +93,14 @@ export function ElevesTable() {
         </div>
 
         <div className="text-sm text-muted-foreground">
-          {filtered.length} élève{filtered.length > 1 ? 's' : ''}
+          {filtered.length} Ã©lÃ¨ve{filtered.length > 1 ? 's' : ''}
         </div>
 
         <div className="overflow-hidden rounded-lg border">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Élève</TableHead>
+                <TableHead>Ã‰lÃ¨ve</TableHead>
                 <TableHead>Matricule</TableHead>
                 <TableHead>Classe</TableHead>
                 <TableHead>Moyenne</TableHead>
@@ -129,7 +129,7 @@ export function ElevesTable() {
                             {e.prenoms} {e.nom}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {e.sexe === 'F' ? 'Fille' : 'Garçon'} —{' '}
+                            {e.sexe === 'F' ? 'Fille' : 'GarÃ§on'} â€”{' '}
                             {e.nationalite}
                           </span>
                         </div>
@@ -139,10 +139,10 @@ export function ElevesTable() {
                       {e.matricule}
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{classe?.nom ?? '—'}</Badge>
+                      <Badge variant="outline">{classe?.nom ?? 'â€”'}</Badge>
                     </TableCell>
                     <TableCell className="tabular-nums">
-                      {e.moyenne > 0 ? `${e.moyenne.toFixed(2)}/20` : '—'}
+                      {e.moyenne > 0 ? `${e.moyenne.toFixed(2)}/20` : 'â€”'}
                     </TableCell>
                     <TableCell>
                       <PaymentBadge statut={e.statutPaiement} />
@@ -160,3 +160,4 @@ export function ElevesTable() {
     </Card>
   )
 }
+

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Check, ChevronLeft, ChevronRight, UserPlus } from 'lucide-react'
@@ -33,9 +33,9 @@ import {
 } from '@/lib/data'
 
 const etapes = [
-  'Élève',
+  'Ã‰lÃ¨ve',
   'Responsable',
-  'Scolarité',
+  'ScolaritÃ©',
   'Finances',
   'Confirmation',
 ] as const
@@ -72,7 +72,7 @@ const initial: Form = {
   telephone: '',
   adresse: '',
   parentId: parents[0]?.id ?? '',
-  lien: 'Père',
+  lien: 'PÃ¨re',
   parentTelephone: '',
   parentEmail: '',
   anneeId: anneesScolaires[0].id,
@@ -110,7 +110,7 @@ function Recap({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4 py-1.5">
       <span className="text-sm text-muted-foreground">{label}</span>
-      <span className="text-right text-sm font-medium">{value || '—'}</span>
+      <span className="text-right text-sm font-medium">{value || 'â€”'}</span>
     </div>
   )
 }
@@ -159,16 +159,16 @@ export function InscriptionWizard() {
               <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
                 <Check className="size-5" />
               </div>
-              <DialogTitle>Inscription enregistrée</DialogTitle>
+              <DialogTitle>Inscription enregistrÃ©e</DialogTitle>
               <DialogDescription>
-                Le dossier de {form.prenoms} {form.nom} a été créé pour la classe{' '}
-                {classe?.nom}. Montant à payer : {formatFCFA(aPayer)}.
+                Le dossier de {form.prenoms} {form.nom} a Ã©tÃ© crÃ©Ã© pour la classe{' '}
+                {classe?.nom}. Montant Ã  payer : {formatFCFA(aPayer)}.
               </DialogDescription>
             </DialogHeader>
             <p className="rounded-lg border border-dashed bg-muted/40 p-3 text-xs text-muted-foreground">
-              Mode maquette : les données saisies ne sont pas encore persistées.
-              La base de données et l&apos;authentification seront branchées dans
-              une phase ultérieure.
+              Mode maquette : les donnÃ©es saisies ne sont pas encore persistÃ©es.
+              La base de donnÃ©es et l&apos;authentification seront branchÃ©es dans
+              une phase ultÃ©rieure.
             </p>
             <DialogFooter>
               <Button variant="outline" onClick={reset}>
@@ -180,9 +180,9 @@ export function InscriptionWizard() {
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Inscription d&apos;un élève</DialogTitle>
+              <DialogTitle>Inscription d&apos;un Ã©lÃ¨ve</DialogTitle>
               <DialogDescription>
-                Étape {step + 1} sur {etapes.length} — {etapes[step]}
+                Ã‰tape {step + 1} sur {etapes.length} â€” {etapes[step]}
               </DialogDescription>
             </DialogHeader>
 
@@ -221,7 +221,7 @@ export function InscriptionWizard() {
                       placeholder="Kouassi"
                     />
                   </Field>
-                  <Field label="Prénoms" htmlFor="prenoms" required>
+                  <Field label="PrÃ©noms" htmlFor="prenoms" required>
                     <Input
                       id="prenoms"
                       value={form.prenoms}
@@ -238,7 +238,7 @@ export function InscriptionWizard() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="F">Féminin</SelectItem>
+                        <SelectItem value="F">FÃ©minin</SelectItem>
                         <SelectItem value="M">Masculin</SelectItem>
                       </SelectContent>
                     </Select>
@@ -259,14 +259,14 @@ export function InscriptionWizard() {
                       placeholder="Abidjan"
                     />
                   </Field>
-                  <Field label="Nationalité" htmlFor="nat">
+                  <Field label="NationalitÃ©" htmlFor="nat">
                     <Input
                       id="nat"
                       value={form.nationalite}
                       onChange={(e) => set('nationalite', e.target.value)}
                     />
                   </Field>
-                  <Field label="Téléphone" htmlFor="tel">
+                  <Field label="TÃ©lÃ©phone" htmlFor="tel">
                     <Input
                       id="tel"
                       value={form.telephone}
@@ -279,7 +279,7 @@ export function InscriptionWizard() {
                       id="adr"
                       value={form.adresse}
                       onChange={(e) => set('adresse', e.target.value)}
-                      placeholder="Cocody Angré, Abidjan"
+                      placeholder="Cocody AngrÃ©, Abidjan"
                     />
                   </Field>
                 </div>
@@ -290,36 +290,36 @@ export function InscriptionWizard() {
                   <Field label="Responsable">
                     <Select
                       value={form.parentId}
-                      onValueChange={(v) => set('parentId', v)}
+                      onValueChange={(v) => set('parentId', v ?? '')}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Sélectionner" />
+                        <SelectValue placeholder="SÃ©lectionner" />
                       </SelectTrigger>
                       <SelectContent>
                         {parents.map((p) => (
                           <SelectItem key={p.id} value={p.id}>
-                            {p.prenoms} {p.nom} — {p.lien}
+                            {p.prenoms} {p.nom} â€” {p.lien}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Field label="Lien de parenté">
+                  <Field label="Lien de parentÃ©">
                     <Select
                       value={form.lien}
-                      onValueChange={(v) => set('lien', v)}
+                      onValueChange={(v) => set('lien', v ?? '')}
                     >
                       <SelectTrigger>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Père">Père</SelectItem>
-                        <SelectItem value="Mère">Mère</SelectItem>
+                        <SelectItem value="PÃ¨re">PÃ¨re</SelectItem>
+                        <SelectItem value="MÃ¨re">MÃ¨re</SelectItem>
                         <SelectItem value="Tuteur">Tuteur</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
-                  <Field label="Téléphone du responsable" htmlFor="ptel">
+                  <Field label="TÃ©lÃ©phone du responsable" htmlFor="ptel">
                     <Input
                       id="ptel"
                       value={form.parentTelephone || parent?.telephone || ''}
@@ -339,10 +339,10 @@ export function InscriptionWizard() {
 
               {step === 2 ? (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <Field label="Année scolaire">
+                  <Field label="AnnÃ©e scolaire">
                     <Select
                       value={form.anneeId}
-                      onValueChange={(v) => set('anneeId', v)}
+                      onValueChange={(v) => set('anneeId', v ?? '')}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -359,7 +359,7 @@ export function InscriptionWizard() {
                   <Field label="Classe">
                     <Select
                       value={form.classeId}
-                      onValueChange={(v) => set('classeId', v)}
+                      onValueChange={(v) => set('classeId', v ?? '')}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -367,7 +367,7 @@ export function InscriptionWizard() {
                       <SelectContent>
                         {classes.map((c) => (
                           <SelectItem key={c.id} value={c.id}>
-                            {c.nom} — {c.cycle}
+                            {c.nom} â€” {c.cycle}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -381,7 +381,7 @@ export function InscriptionWizard() {
                       onChange={(e) => set('dateInscription', e.target.value)}
                     />
                   </Field>
-                  <Field label="Statut de l'élève">
+                  <Field label="Statut de l'Ã©lÃ¨ve">
                     <Select
                       value={form.statut}
                       onValueChange={(v) =>
@@ -392,14 +392,14 @@ export function InscriptionWizard() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="nouveau">Nouvel élève</SelectItem>
-                        <SelectItem value="inscrit">Ancien élève</SelectItem>
+                        <SelectItem value="nouveau">Nouvel Ã©lÃ¨ve</SelectItem>
+                        <SelectItem value="inscrit">Ancien Ã©lÃ¨ve</SelectItem>
                       </SelectContent>
                     </Select>
                   </Field>
                   <p className="text-xs text-muted-foreground sm:col-span-2">
-                    Niveau : {classe?.niveau} — Effectif actuel {classe?.effectif}/
-                    {classe?.capacite} — Salle {classe?.salle}
+                    Niveau : {classe?.niveau} â€” Effectif actuel {classe?.effectif}/
+                    {classe?.capacite} â€” Salle {classe?.salle}
                   </p>
                 </div>
               ) : null}
@@ -418,7 +418,7 @@ export function InscriptionWizard() {
                         }
                       />
                     </Field>
-                    <Field label="Scolarité" htmlFor="sc">
+                    <Field label="ScolaritÃ©" htmlFor="sc">
                       <Input
                         id="sc"
                         type="number"
@@ -427,7 +427,7 @@ export function InscriptionWizard() {
                         onChange={(e) => set('scolarite', Number(e.target.value))}
                       />
                     </Field>
-                    <Field label="Réduction" htmlFor="red">
+                    <Field label="RÃ©duction" htmlFor="red">
                       <Input
                         id="red"
                         type="number"
@@ -442,22 +442,22 @@ export function InscriptionWizard() {
                       label="Frais d'inscription"
                       value={formatFCFA(form.fraisInscription)}
                     />
-                    <Recap label="Scolarité" value={formatFCFA(form.scolarite)} />
+                    <Recap label="ScolaritÃ©" value={formatFCFA(form.scolarite)} />
                     <Recap
-                      label="Réduction accordée"
+                      label="RÃ©duction accordÃ©e"
                       value={`- ${formatFCFA(form.reduction)}`}
                     />
                     <Separator className="my-1" />
                     <div className="flex items-baseline justify-between">
                       <span className="text-sm font-medium">
-                        Montant à payer
+                        Montant Ã  payer
                       </span>
                       <span className="text-lg font-semibold tabular-nums">
                         {formatFCFA(aPayer)}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Échéancier suggéré : 3 versements de{' '}
+                      Ã‰chÃ©ancier suggÃ©rÃ© : 3 versements de{' '}
                       {formatFCFA(Math.round(aPayer / 3))}
                     </p>
                   </div>
@@ -468,41 +468,41 @@ export function InscriptionWizard() {
                 <div className="flex flex-col gap-4">
                   <div className="flex flex-col rounded-lg border p-4">
                     <span className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Élève
+                      Ã‰lÃ¨ve
                     </span>
                     <Recap
-                      label="Nom & prénoms"
+                      label="Nom & prÃ©noms"
                       value={`${form.prenoms} ${form.nom}`}
                     />
                     <Recap
                       label="Sexe"
-                      value={form.sexe === 'F' ? 'Féminin' : 'Masculin'}
+                      value={form.sexe === 'F' ? 'FÃ©minin' : 'Masculin'}
                     />
                     <Recap
                       label="Naissance"
                       value={
                         form.dateNaissance
-                          ? `${new Date(form.dateNaissance).toLocaleDateString('fr-FR')} à ${form.lieuNaissance}`
+                          ? `${new Date(form.dateNaissance).toLocaleDateString('fr-FR')} Ã  ${form.lieuNaissance}`
                           : form.lieuNaissance
                       }
                     />
-                    <Recap label="Nationalité" value={form.nationalite} />
+                    <Recap label="NationalitÃ©" value={form.nationalite} />
                     <Recap label="Adresse" value={form.adresse} />
                   </div>
                   <div className="flex flex-col rounded-lg border p-4">
                     <span className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                      Responsable & scolarité
+                      Responsable & scolaritÃ©
                     </span>
                     <Recap
                       label="Responsable"
-                      value={parent ? `${parent.prenoms} ${parent.nom} (${form.lien})` : '—'}
+                      value={parent ? `${parent.prenoms} ${parent.nom} (${form.lien})` : 'â€”'}
                     />
                     <Recap
                       label="Classe"
-                      value={`${classe?.nom ?? ''} — ${classe?.niveau ?? ''}`}
+                      value={`${classe?.nom ?? ''} â€” ${classe?.niveau ?? ''}`}
                     />
                     <Recap
-                      label="Année scolaire"
+                      label="AnnÃ©e scolaire"
                       value={
                         anneesScolaires.find((a) => a.id === form.anneeId)
                           ?.libelle ?? ''
@@ -516,11 +516,11 @@ export function InscriptionWizard() {
                     />
                     <Recap
                       label="Statut"
-                      value={form.statut === 'nouveau' ? 'Nouvel élève' : 'Ancien élève'}
+                      value={form.statut === 'nouveau' ? 'Nouvel Ã©lÃ¨ve' : 'Ancien Ã©lÃ¨ve'}
                     />
                   </div>
                   <div className="flex items-center justify-between rounded-lg border bg-primary/5 p-4">
-                    <span className="text-sm font-medium">Montant à payer</span>
+                    <span className="text-sm font-medium">Montant Ã  payer</span>
                     <Badge
                       variant="secondary"
                       className="border-transparent bg-primary/10 text-base tabular-nums text-primary"
@@ -539,7 +539,7 @@ export function InscriptionWizard() {
                 disabled={step === 0}
               >
                 <ChevronLeft className="size-4" data-icon="inline-start" />
-                Précédent
+                PrÃ©cÃ©dent
               </Button>
               {step < etapes.length - 1 ? (
                 <Button
@@ -562,3 +562,4 @@ export function InscriptionWizard() {
     </Dialog>
   )
 }
+
