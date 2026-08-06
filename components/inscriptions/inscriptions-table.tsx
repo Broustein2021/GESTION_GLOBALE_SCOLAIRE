@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -61,7 +61,7 @@ export function InscriptionsTable() {
               aria-label="Rechercher une inscription"
             />
           </div>
-          <Select value={classeId} onValueChange={setClasseId}>
+          <Select value={classeId} onValueChange={(value) => setClasseId(value ?? '')}>
             <SelectTrigger className="w-full sm:w-44">
               <SelectValue placeholder="Classe" />
             </SelectTrigger>
@@ -74,14 +74,14 @@ export function InscriptionsTable() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={statut} onValueChange={setStatut}>
+          <Select value={statut} onValueChange={(value) => setStatut(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tous">Tous les dossiers</SelectItem>
-              <SelectItem value="nouveau">Nouveaux élèves</SelectItem>
-              <SelectItem value="inscrit">Anciens élèves</SelectItem>
+              <SelectItem value="nouveau">Nouveaux Ã©lÃ¨ves</SelectItem>
+              <SelectItem value="inscrit">Anciens Ã©lÃ¨ves</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -94,8 +94,8 @@ export function InscriptionsTable() {
           <div className="rounded-lg border border-dashed">
             <EmptyState
               icon={UserPlus}
-              title="Aucune inscription trouvée"
-              description="Aucun dossier ne correspond à votre recherche. Modifiez les filtres ou créez une nouvelle inscription."
+              title="Aucune inscription trouvÃ©e"
+              description="Aucun dossier ne correspond Ã  votre recherche. Modifiez les filtres ou crÃ©ez une nouvelle inscription."
             />
           </div>
         ) : (
@@ -103,12 +103,12 @@ export function InscriptionsTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Élève</TableHead>
+                  <TableHead>Ã‰lÃ¨ve</TableHead>
                   <TableHead>Matricule</TableHead>
                   <TableHead>Classe</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Dossier</TableHead>
-                  <TableHead className="text-right">Reste à payer</TableHead>
+                  <TableHead className="text-right">Reste Ã  payer</TableHead>
                   <TableHead>Paiement</TableHead>
                 </TableRow>
               </TableHeader>
@@ -129,7 +129,7 @@ export function InscriptionsTable() {
                         {e.matricule}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{classe?.nom ?? '—'}</Badge>
+                        <Badge variant="outline">{classe?.nom ?? 'â€”'}</Badge>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         {new Date(e.dateInscription).toLocaleDateString('fr-FR')}
@@ -143,7 +143,7 @@ export function InscriptionsTable() {
                             Nouveau
                           </Badge>
                         ) : (
-                          <Badge variant="secondary">Réinscription</Badge>
+                          <Badge variant="secondary">RÃ©inscription</Badge>
                         )}
                       </TableCell>
                       <TableCell className="text-right tabular-nums">
@@ -163,3 +163,4 @@ export function InscriptionsTable() {
     </Card>
   )
 }
+

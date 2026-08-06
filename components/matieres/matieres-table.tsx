@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -58,12 +58,12 @@ function MatiereDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            {matiere ? `Matière — ${matiere.nom}` : 'Nouvelle matière'}
+            {matiere ? `MatiÃ¨re â€” ${matiere.nom}` : 'Nouvelle matiÃ¨re'}
           </DialogTitle>
           <DialogDescription>
             {saved
-              ? 'Enregistré en mode maquette — les données ne sont pas encore persistées.'
-              : 'Code, libellé, coefficient et cycle concerné.'}
+              ? 'EnregistrÃ© en mode maquette â€” les donnÃ©es ne sont pas encore persistÃ©es.'
+              : 'Code, libellÃ©, coefficient et cycle concernÃ©.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -82,16 +82,16 @@ function MatiereDialog({
             />
           </div>
           <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label htmlFor="m-nom">Libellé</Label>
+            <Label htmlFor="m-nom">LibellÃ©</Label>
             <Input
               id="m-nom"
               defaultValue={matiere?.nom}
-              placeholder="Mathématiques"
+              placeholder="MathÃ©matiques"
             />
           </div>
           <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="m-cycle">Cycle</Label>
-            <Select defaultValue={matiere?.cycle ?? 'Collège'}>
+            <Select defaultValue={matiere?.cycle ?? 'CollÃ¨ge'}>
               <SelectTrigger id="m-cycle">
                 <SelectValue />
               </SelectTrigger>
@@ -113,7 +113,7 @@ function MatiereDialog({
             </Button>
           ) : null}
           <Button onClick={() => setSaved(true)} disabled={saved}>
-            {saved ? 'Enregistré' : 'Enregistrer'}
+            {saved ? 'EnregistrÃ©' : 'Enregistrer'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -146,12 +146,12 @@ export function MatieresTable() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Rechercher une matière..."
+              placeholder="Rechercher une matiÃ¨re..."
               className="pl-8"
-              aria-label="Rechercher une matière"
+              aria-label="Rechercher une matiÃ¨re"
             />
           </div>
-          <Select value={cycle} onValueChange={setCycle}>
+          <Select value={cycle} onValueChange={(value) => setCycle(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Cycle" />
             </SelectTrigger>
@@ -170,14 +170,14 @@ export function MatieresTable() {
           <div className="rounded-lg border border-dashed">
             <EmptyState
               icon={BookOpen}
-              title="Aucune matière trouvée"
-              description="Créez votre première matière pour organiser les évaluations."
+              title="Aucune matiÃ¨re trouvÃ©e"
+              description="CrÃ©ez votre premiÃ¨re matiÃ¨re pour organiser les Ã©valuations."
             >
               <MatiereDialog
                 trigger={
                   <Button>
                     <Plus className="size-4" data-icon="inline-start" />
-                    Créer une matière
+                    CrÃ©er une matiÃ¨re
                   </Button>
                 }
               />
@@ -189,10 +189,10 @@ export function MatieresTable() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Code</TableHead>
-                  <TableHead>Matière</TableHead>
+                  <TableHead>MatiÃ¨re</TableHead>
                   <TableHead className="text-center">Coefficient</TableHead>
                   <TableHead>Cycle</TableHead>
-                  <TableHead>Enseignants affectés</TableHead>
+                  <TableHead>Enseignants affectÃ©s</TableHead>
                   <TableHead className="w-24" />
                 </TableRow>
               </TableHeader>
@@ -214,7 +214,7 @@ export function MatieresTable() {
                     <TableCell>
                       {m.enseignantIds.length === 0 ? (
                         <span className="text-sm text-muted-foreground">
-                          Non affectée
+                          Non affectÃ©e
                         </span>
                       ) : (
                         <div className="flex flex-wrap gap-2">
@@ -256,3 +256,4 @@ export function MatieresTable() {
 }
 
 export { MatiereDialog }
+

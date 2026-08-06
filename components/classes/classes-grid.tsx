@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -50,7 +50,7 @@ export function ClassesGrid() {
               aria-label="Rechercher une classe"
             />
           </div>
-          <Select value={cycle} onValueChange={setCycle}>
+          <Select value={cycle} onValueChange={(value) => setCycle(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Cycle" />
             </SelectTrigger>
@@ -63,7 +63,7 @@ export function ClassesGrid() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={niveau} onValueChange={setNiveau}>
+          <Select value={niveau} onValueChange={(value) => setNiveau(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Niveau" />
             </SelectTrigger>
@@ -84,8 +84,8 @@ export function ClassesGrid() {
           <CardContent className="p-0">
             <EmptyState
               icon={School}
-              title="Aucune classe trouvée"
-              description="Aucune classe ne correspond aux filtres sélectionnés."
+              title="Aucune classe trouvÃ©e"
+              description="Aucune classe ne correspond aux filtres sÃ©lectionnÃ©s."
             />
           </CardContent>
         </Card>
@@ -132,7 +132,7 @@ export function ClassesGrid() {
                       <div className="flex items-center gap-2">
                         <User className="size-4 shrink-0 text-muted-foreground" />
                         <span className="truncate">
-                          {prof ? `${prof.prenoms} ${prof.nom}` : 'Non affecté'}
+                          {prof ? `${prof.prenoms} ${prof.nom}` : 'Non affectÃ©'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -150,3 +150,4 @@ export function ClassesGrid() {
     </div>
   )
 }
+

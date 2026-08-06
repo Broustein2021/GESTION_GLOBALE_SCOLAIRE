@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -85,19 +85,19 @@ export function EvaluationDialog({ trigger }: { trigger: React.ReactNode }) {
       <DialogTrigger render={trigger as React.ReactElement} />
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Nouvelle évaluation</DialogTitle>
+          <DialogTitle>Nouvelle Ã©valuation</DialogTitle>
           <DialogDescription>
             {saved
-              ? 'Évaluation créée en mode maquette — les données ne sont pas encore persistées.'
+              ? 'Ã‰valuation crÃ©Ã©e en mode maquette â€” les donnÃ©es ne sont pas encore persistÃ©es.'
               : 'Planifiez un devoir, une interrogation ou une composition.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label htmlFor="ev-libelle">Libellé</Label>
+            <Label htmlFor="ev-libelle">LibellÃ©</Label>
             <Input
               id="ev-libelle"
-              placeholder="Composition N°1 — Mathématiques"
+              placeholder="Composition NÂ°1 â€” MathÃ©matiques"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -116,7 +116,7 @@ export function EvaluationDialog({ trigger }: { trigger: React.ReactNode }) {
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ev-periode">Période</Label>
+            <Label htmlFor="ev-periode">PÃ©riode</Label>
             <Select defaultValue={trimestres[0]}>
               <SelectTrigger id="ev-periode">
                 <SelectValue />
@@ -146,7 +146,7 @@ export function EvaluationDialog({ trigger }: { trigger: React.ReactNode }) {
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ev-matiere">Matière</Label>
+            <Label htmlFor="ev-matiere">MatiÃ¨re</Label>
             <Select defaultValue={matieres[0].id}>
               <SelectTrigger id="ev-matiere">
                 <SelectValue />
@@ -184,7 +184,7 @@ export function EvaluationDialog({ trigger }: { trigger: React.ReactNode }) {
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ev-bareme">Barème</Label>
+            <Label htmlFor="ev-bareme">BarÃ¨me</Label>
             <Input id="ev-bareme" type="number" min={1} defaultValue={20} />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -203,7 +203,7 @@ export function EvaluationDialog({ trigger }: { trigger: React.ReactNode }) {
             Annuler
           </Button>
           <Button onClick={() => setSaved(true)} disabled={saved}>
-            {saved ? 'Créée' : 'Créer l’évaluation'}
+            {saved ? 'CrÃ©Ã©e' : 'CrÃ©er lâ€™Ã©valuation'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -241,12 +241,12 @@ export function EvaluationsTable() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Rechercher une évaluation..."
+              placeholder="Rechercher une Ã©valuation..."
               className="pl-8"
-              aria-label="Rechercher une évaluation"
+              aria-label="Rechercher une Ã©valuation"
             />
           </div>
-          <Select value={classeId} onValueChange={setClasseId}>
+          <Select value={classeId} onValueChange={(value) => setClasseId(value ?? '')}>
             <SelectTrigger className="w-full sm:w-44">
               <SelectValue placeholder="Classe" />
             </SelectTrigger>
@@ -259,15 +259,15 @@ export function EvaluationsTable() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={statut} onValueChange={setStatut}>
+          <Select value={statut} onValueChange={(value) => setStatut(value ?? '')}>
             <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tous">Tous les statuts</SelectItem>
-              <SelectItem value="planifiee">Planifiée</SelectItem>
+              <SelectItem value="planifiee">PlanifiÃ©e</SelectItem>
               <SelectItem value="saisie">Saisie</SelectItem>
-              <SelectItem value="validee">Validée</SelectItem>
+              <SelectItem value="validee">ValidÃ©e</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -276,14 +276,14 @@ export function EvaluationsTable() {
           <div className="rounded-lg border border-dashed">
             <EmptyState
               icon={ClipboardList}
-              title="Aucune évaluation trouvée"
-              description="Planifiez une première évaluation pour cette période."
+              title="Aucune Ã©valuation trouvÃ©e"
+              description="Planifiez une premiÃ¨re Ã©valuation pour cette pÃ©riode."
             >
               <EvaluationDialog
                 trigger={
                   <Button>
                     <Plus className="size-4" data-icon="inline-start" />
-                    Créer une évaluation
+                    CrÃ©er une Ã©valuation
                   </Button>
                 }
               />
@@ -294,12 +294,12 @@ export function EvaluationsTable() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Évaluation</TableHead>
+                  <TableHead>Ã‰valuation</TableHead>
                   <TableHead>Classe</TableHead>
-                  <TableHead>Matière</TableHead>
+                  <TableHead>MatiÃ¨re</TableHead>
                   <TableHead>Enseignant</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead className="text-center">Barème</TableHead>
+                  <TableHead className="text-center">BarÃ¨me</TableHead>
                   <TableHead className="text-center">Coef.</TableHead>
                   <TableHead>Statut</TableHead>
                   <TableHead className="w-20" />
@@ -316,7 +316,7 @@ export function EvaluationsTable() {
                             {ev.libelle}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {ev.type} — {ev.periode}
+                            {ev.type} â€” {ev.periode}
                           </span>
                         </div>
                       </TableCell>
@@ -334,7 +334,7 @@ export function EvaluationsTable() {
                       <TableCell className="text-muted-foreground">
                         {enseignant
                           ? `${enseignant.prenoms} ${enseignant.nom}`
-                          : '—'}
+                          : 'â€”'}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         {new Date(ev.date).toLocaleDateString('fr-FR')}
@@ -369,3 +369,4 @@ export function EvaluationsTable() {
     </Card>
   )
 }
+

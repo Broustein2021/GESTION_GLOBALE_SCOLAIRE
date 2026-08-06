@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -71,8 +71,8 @@ function EnseignantDialog({
           </DialogTitle>
           <DialogDescription>
             {saved
-              ? 'Enregistré en mode maquette — les données ne sont pas encore persistées.'
-              : 'Identité, contact et affectation pédagogique.'}
+              ? 'EnregistrÃ© en mode maquette â€” les donnÃ©es ne sont pas encore persistÃ©es.'
+              : 'IdentitÃ©, contact et affectation pÃ©dagogique.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -81,7 +81,7 @@ function EnseignantDialog({
             <Input id="t-nom" defaultValue={enseignant?.nom} placeholder="Kouassi" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="t-prenoms">Prénoms</Label>
+            <Label htmlFor="t-prenoms">PrÃ©noms</Label>
             <Input
               id="t-prenoms"
               defaultValue={enseignant?.prenoms}
@@ -89,7 +89,7 @@ function EnseignantDialog({
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="t-tel">Téléphone</Label>
+            <Label htmlFor="t-tel">TÃ©lÃ©phone</Label>
             <Input id="t-tel" defaultValue={enseignant?.telephone} />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -97,7 +97,7 @@ function EnseignantDialog({
             <Input id="t-mail" type="email" defaultValue={enseignant?.email} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="t-matiere">Matière principale</Label>
+            <Label htmlFor="t-matiere">MatiÃ¨re principale</Label>
             <Select defaultValue={enseignant?.matieres[0] ?? matieres[0].id}>
               <SelectTrigger id="t-matiere">
                 <SelectValue />
@@ -123,7 +123,7 @@ function EnseignantDialog({
         {enseignant ? (
           <div className="flex flex-col gap-2 rounded-lg border p-3">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Classes affectées
+              Classes affectÃ©es
             </span>
             <div className="flex flex-wrap gap-2">
               {enseignant.classes.map((cid) => (
@@ -143,7 +143,7 @@ function EnseignantDialog({
             Fermer
           </Button>
           <Button onClick={() => setSaved(true)} disabled={saved}>
-            {saved ? 'Enregistré' : 'Enregistrer'}
+            {saved ? 'EnregistrÃ©' : 'Enregistrer'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -185,12 +185,12 @@ export function EnseignantsTable() {
               aria-label="Rechercher un enseignant"
             />
           </div>
-          <Select value={matiereId} onValueChange={setMatiereId}>
+          <Select value={matiereId} onValueChange={(value) => setMatiereId(value ?? '')}>
             <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="Matière" />
+              <SelectValue placeholder="MatiÃ¨re" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="toutes">Toutes les matières</SelectItem>
+              <SelectItem value="toutes">Toutes les matiÃ¨res</SelectItem>
               {matieres.map((m) => (
                 <SelectItem key={m.id} value={m.id}>
                   {m.nom}
@@ -198,14 +198,14 @@ export function EnseignantsTable() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={statut} onValueChange={setStatut}>
+          <Select value={statut} onValueChange={(value) => setStatut(value ?? '')}>
             <SelectTrigger className="w-full sm:w-36">
               <SelectValue placeholder="Statut" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tous">Tous</SelectItem>
               <SelectItem value="actif">Actifs</SelectItem>
-              <SelectItem value="archive">Archivés</SelectItem>
+              <SelectItem value="archive">ArchivÃ©s</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -218,7 +218,7 @@ export function EnseignantsTable() {
           <div className="rounded-lg border border-dashed">
             <EmptyState
               icon={GraduationCap}
-              title="Aucun enseignant trouvé"
+              title="Aucun enseignant trouvÃ©"
               description="Commencez par ajouter votre premier enseignant."
             >
               <EnseignantDialog
@@ -238,7 +238,7 @@ export function EnseignantsTable() {
                 <TableRow>
                   <TableHead>Enseignant</TableHead>
                   <TableHead>Matricule</TableHead>
-                  <TableHead>Matières</TableHead>
+                  <TableHead>MatiÃ¨res</TableHead>
                   <TableHead>Classes</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead className="w-24" />
@@ -328,3 +328,4 @@ export function EnseignantsTable() {
 }
 
 export { EnseignantDialog }
+
