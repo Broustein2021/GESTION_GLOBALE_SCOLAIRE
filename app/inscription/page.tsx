@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -119,7 +119,7 @@ export default function InscriptionPage() {
                 </CardTitle>
 
                 <CardDescription className="mt-2">
-                  Un e-mail de confirmation vient d'être envoyé à :
+                  Un e-mail de confirmation vient d’être envoyé à :
                 </CardDescription>
 
                 <p className="mt-3 font-medium break-all">

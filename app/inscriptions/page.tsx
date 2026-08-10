@@ -6,15 +6,21 @@ import { InscriptionWizard } from '@/components/inscriptions/inscription-wizard'
 import { InscriptionsTable } from '@/components/inscriptions/inscriptions-table'
 import { eleves, etablissement, formatFCFA, kpis } from '@/lib/data'
 
-export const metadata = { title: 'Inscriptions — GESTION-SCOLAIRE' }
+export const metadata = {
+  title: 'Inscriptions — GESTION-SCOLAIRE',
+}
 
 export default function InscriptionsPage() {
   const nouveaux = eleves.filter((e) => e.statut === 'nouveau').length
   const reinscriptions = eleves.filter((e) => e.statut === 'inscrit').length
-  const attenduInscriptions = eleves.reduce((s, e) => s + e.montantDu, 0)
+
+  const attenduInscriptions = eleves.reduce(
+    (total, eleve) => total + eleve.montantDu,
+    0,
+  )
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <PageHeader
         title="Inscriptions"
         description={`Dossiers d'inscription — année scolaire ${etablissement.anneeScolaire}`}
@@ -29,6 +35,7 @@ export default function InscriptionsPage() {
           hint="Élèves inscrits cette année"
           icon={Users}
         />
+
         <StatCard
           label="Nouveaux élèves"
           value={nouveaux}
@@ -36,6 +43,7 @@ export default function InscriptionsPage() {
           icon={UserPlus}
           accent="sky"
         />
+
         <StatCard
           label="Réinscriptions"
           value={reinscriptions}
@@ -43,6 +51,7 @@ export default function InscriptionsPage() {
           icon={CalendarCheck}
           accent="amber"
         />
+
         <StatCard
           label="Frais engagés"
           value={formatFCFA(attenduInscriptions)}
@@ -53,6 +62,6 @@ export default function InscriptionsPage() {
       </div>
 
       <InscriptionsTable />
-    </>
+    </div>
   )
 }
