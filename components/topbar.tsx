@@ -1,44 +1,55 @@
-'use client'
+"use client"
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Bell, LogOut, Search } from 'lucide-react'
+import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Bell, LogOut, Search } from "lucide-react"
 
-import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Separator } from '@/components/ui/separator'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
+import { SidebarTrigger } from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select"
 
-import { anneesScolaires, etablissement } from '@/lib/data'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from "@/lib/supabase/client"
+import { useSchool } from "@/components/school-provider"
 
 export function Topbar() {
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
+  const {
+    school,
+    academicYears,
+    currentAcademicYear,
+  } = useSchool()
 
-  const [email, setEmail] = useState<string>('Utilisateur')
+  const [email, setEmail] = useState<string>("Utilisateur")
   const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   useEffect(() => {
+    let mounted = true
+
     const loadUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser()
 
-      if (user?.email) {
+      if (mounted && user?.email) {
         setEmail(user.email)
       }
     }
 
-    loadUser()
+    void loadUser()
+
+    return () => {
+      mounted = false
+    }
   }, [supabase])
 
   const handleLogout = async () => {
@@ -47,39 +58,41 @@ export function Topbar() {
     const { error } = await supabase.auth.signOut()
 
     if (error) {
-      console.error('Erreur lors de la déconnexion:', error)
+      console.error("Erreur lors de la déconnexion :", error)
       setIsLoggingOut(false)
       return
     }
 
-    router.replace('/login')
+    router.replace("/login")
     router.refresh()
   }
 
   const initials = email
-    .split('@')[0]
+    .split("@")[0]
     .slice(0, 2)
     .toUpperCase()
 
+  const schoolLocation = [school?.city, school?.commune]
+    .filter(Boolean)
+    .join(" — ")
+
   return (
-    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <SidebarTrigger />
 
       <Separator orientation="vertical" className="h-6" />
 
       <div className="hidden min-w-0 flex-col md:flex">
         <span className="truncate text-sm font-medium leading-tight">
-          {etablissement.nom}
+          {school?.name ?? "Établissement"}
         </span>
 
         <span className="truncate text-xs text-muted-foreground">
-          {etablissement.ville} — {etablissement.commune}
+          {schoolLocation || "Informations de l’établissement"}
         </span>
       </div>
 
       <div className="ml-auto flex items-center gap-2">
-
-        {/* Recherche */}
         <div className="relative hidden lg:block">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
@@ -90,22 +103,26 @@ export function Topbar() {
           />
         </div>
 
-        {/* Année scolaire */}
-        <Select defaultValue={anneesScolaires[0].id}>
-          <SelectTrigger className="h-9 w-[132px]" size="sm">
-            <SelectValue />
+        <Select defaultValue={currentAcademicYear?.id}>
+          <SelectTrigger className="h-9 w-[150px]" size="sm">
+            <SelectValue placeholder="Année scolaire" />
           </SelectTrigger>
 
           <SelectContent>
-            {anneesScolaires.map((a) => (
-              <SelectItem key={a.id} value={a.id}>
-                {a.libelle}
+            {academicYears.length > 0 ? (
+              academicYears.map((year) => (
+                <SelectItem key={year.id} value={year.id}>
+                  {year.label}
+                </SelectItem>
+              ))
+            ) : (
+              <SelectItem value="no-year" disabled>
+                Aucune année
               </SelectItem>
-            ))}
+            )}
           </SelectContent>
         </Select>
 
-        {/* Notifications */}
         <Button
           variant="outline"
           size="icon"
@@ -119,7 +136,6 @@ export function Topbar() {
           </span>
         </Button>
 
-        {/* Utilisateur */}
         <div className="flex items-center gap-2 pl-1">
           <Avatar className="size-8">
             <AvatarFallback className="bg-primary text-primary-foreground text-xs">
@@ -144,7 +160,6 @@ export function Topbar() {
           </div>
         </div>
 
-        {/* Déconnexion */}
         <Button
           variant="outline"
           size="sm"
@@ -155,7 +170,7 @@ export function Topbar() {
           <LogOut className="size-4" />
 
           <span className="hidden sm:inline">
-            {isLoggingOut ? 'Déconnexion...' : 'Déconnexion'}
+            {isLoggingOut ? "Déconnexion..." : "Déconnexion"}
           </span>
         </Button>
       </div>

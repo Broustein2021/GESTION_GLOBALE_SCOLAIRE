@@ -89,6 +89,10 @@ export async function updateSession(request: NextRequest) {
     .eq('user_id', user.id)
     .maybeSingle()
 
+  console.log('[DEBUG proxy] user.id =', user.id)
+  console.log('[DEBUG proxy] profile =', profile)
+  console.log('[DEBUG proxy] profileError =', profileError)
+
   /*
    * ============================================================
    * 3. NOUVEL UTILISATEUR
@@ -145,6 +149,10 @@ export async function updateSession(request: NextRequest) {
       .select('id, school_id, role, status')
       .eq('profile_id', profile.id)
       .maybeSingle()
+
+  console.log('[DEBUG proxy] profile.id =', profile.id)
+  console.log('[DEBUG proxy] membership =', membership)
+  console.log('[DEBUG proxy] membershipError =', membershipError)
 
   /*
    * ============================================================

@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
   LayoutDashboard,
   Users,
@@ -15,7 +15,7 @@ import {
   FileText,
   Wallet,
   GraduationCap as Logo,
-} from 'lucide-react'
+} from "lucide-react"
 
 import {
   Sidebar,
@@ -27,8 +27,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from '@/components/ui/sidebar'
-import { etablissement, nav } from '@/lib/data'
+} from "@/components/ui/sidebar"
+
+import { nav } from "@/lib/data"
+import { useSchool } from "@/components/school-provider"
 
 const iconMap = {
   dashboard: LayoutDashboard,
@@ -46,20 +48,31 @@ const iconMap = {
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const { school, organization } = useSchool()
 
   return (
     <Sidebar>
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-3 px-2 py-2">
-          <div className="flex size-9 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-            <Logo className="size-5" />
+          <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
+            {school?.logo_url ? (
+              <img
+                src={school.logo_url}
+                alt=""
+                className="size-full object-cover"
+              />
+            ) : (
+              <Logo className="size-5" />
+            )}
           </div>
+
           <div className="flex min-w-0 flex-col">
             <span className="truncate text-sm font-semibold text-sidebar-foreground">
-              GESTION-SCOLAIRE
+              {organization?.name ?? "GESTION-SCOLAIRE"}
             </span>
+
             <span className="truncate text-xs text-sidebar-foreground/60">
-              {etablissement.organisation}
+              {school?.name ?? "Établissement"}
             </span>
           </div>
         </div>
@@ -69,13 +82,20 @@ export function AppSidebar() {
         {nav.map((section) => (
           <SidebarGroup key={section.group}>
             <SidebarGroupLabel>{section.group}</SidebarGroupLabel>
+
             <SidebarMenu>
               {section.items.map((item) => {
                 const Icon = iconMap[item.icon as keyof typeof iconMap]
+
+                if (!Icon) {
+                  return null
+                }
+
                 const active =
-                  item.href === '/'
-                    ? pathname === '/'
+                  item.href === "/"
+                    ? pathname === "/"
                     : pathname.startsWith(item.href)
+
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
@@ -94,6 +114,7 @@ export function AppSidebar() {
           </SidebarGroup>
         ))}
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   )
