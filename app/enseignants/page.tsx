@@ -7,14 +7,17 @@ import {
   EnseignantsTable,
   EnseignantDialog,
 } from '@/components/enseignants/enseignants-table'
-import { enseignants, matieres } from '@/lib/data'
+import { getEnseignantsData } from '@/lib/queries/enseignants'
 
 export const metadata = { title: 'Enseignants — GESTION-SCOLAIRE' }
 
-export default function EnseignantsPage() {
+export default async function EnseignantsPage() {
+  const { enseignants, matieres } = await getEnseignantsData()
+
   const actifs = enseignants.filter((t) => t.statut === 'actif')
   const affectations = enseignants.reduce((s, t) => s + t.classes.length, 0)
-  const matieresCouvertes = matieres.filter((m) => m.enseignantIds.length > 0).length
+  const matiereIdsCouvertes = new Set(enseignants.flatMap((t) => t.matiereIds))
+  const matieresCouvertes = matieres.filter((m) => matiereIdsCouvertes.has(m.id)).length
 
   return (
     <>
@@ -23,6 +26,7 @@ export default function EnseignantsPage() {
         description="Corps enseignant, matières et affectations par classe"
       >
         <EnseignantDialog
+          matieres={matieres}
           trigger={
             <Button>
               <Plus className="size-4" data-icon="inline-start" />
@@ -33,11 +37,7 @@ export default function EnseignantsPage() {
       </PageHeader>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label="Enseignants actifs"
-          value={actifs.length}
-          icon={GraduationCap}
-        />
+        <StatCard label="Enseignants actifs" value={actifs.length} icon={GraduationCap} />
         <StatCard
           label="Affectations"
           value={affectations}
@@ -60,7 +60,7 @@ export default function EnseignantsPage() {
         />
       </div>
 
-      <EnseignantsTable />
+      <EnseignantsTable enseignants={enseignants} matieres={matieres} />
     </>
   )
 }

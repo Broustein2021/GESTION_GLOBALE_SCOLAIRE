@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -35,19 +35,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  enseignants,
-  getClasse,
-  getMatiere,
-  matieres,
-  type Enseignant,
-} from '@/lib/data'
+import type { Enseignant, MatiereRef } from '@/lib/queries/enseignants'
 
 function EnseignantDialog({
   enseignant,
+  matieres,
   trigger,
 }: {
   enseignant?: Enseignant
+  matieres: MatiereRef[]
   trigger: React.ReactNode
 }) {
   const [open, setOpen] = useState(false)
@@ -65,14 +61,12 @@ function EnseignantDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {enseignant
-              ? `${enseignant.prenoms} ${enseignant.nom}`
-              : 'Nouvel enseignant'}
+            {enseignant ? `${enseignant.prenoms} ${enseignant.nom}` : 'Nouvel enseignant'}
           </DialogTitle>
           <DialogDescription>
             {saved
-              ? 'EnregistrÃ© en mode maquette â€” les donnÃ©es ne sont pas encore persistÃ©es.'
-              : 'IdentitÃ©, contact et affectation pÃ©dagogique.'}
+              ? 'Enregistré — la création réelle sera branchée au module Enseignants.'
+              : 'Identité, contact et affectation pédagogique.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -81,15 +75,11 @@ function EnseignantDialog({
             <Input id="t-nom" defaultValue={enseignant?.nom} placeholder="Kouassi" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="t-prenoms">PrÃ©noms</Label>
-            <Input
-              id="t-prenoms"
-              defaultValue={enseignant?.prenoms}
-              placeholder="Jean-Marc"
-            />
+            <Label htmlFor="t-prenoms">Prénoms</Label>
+            <Input id="t-prenoms" defaultValue={enseignant?.prenoms} placeholder="Jean-Marc" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="t-tel">TÃ©lÃ©phone</Label>
+            <Label htmlFor="t-tel">Téléphone</Label>
             <Input id="t-tel" defaultValue={enseignant?.telephone} />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -97,8 +87,8 @@ function EnseignantDialog({
             <Input id="t-mail" type="email" defaultValue={enseignant?.email} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="t-matiere">MatiÃ¨re principale</Label>
-            <Select defaultValue={enseignant?.matieres[0] ?? matieres[0].id}>
+            <Label htmlFor="t-matiere">Matière principale</Label>
+            <Select defaultValue={enseignant?.matiereIds[0] ?? matieres[0]?.id}>
               <SelectTrigger id="t-matiere">
                 <SelectValue />
               </SelectTrigger>
@@ -113,26 +103,22 @@ function EnseignantDialog({
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="t-embauche">Date d&apos;embauche</Label>
-            <Input
-              id="t-embauche"
-              type="date"
-              defaultValue={enseignant?.dateEmbauche ?? ''}
-            />
+            <Input id="t-embauche" type="date" defaultValue={enseignant?.dateEmbauche ?? ''} />
           </div>
         </div>
-        {enseignant ? (
+        {enseignant && enseignant.classes.length > 0 ? (
           <div className="flex flex-col gap-2 rounded-lg border p-3">
             <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Classes affectÃ©es
+              Classes affectées
             </span>
             <div className="flex flex-wrap gap-2">
-              {enseignant.classes.map((cid) => (
+              {enseignant.classes.map((c) => (
                 <Link
-                  key={cid}
-                  href={`/classes/${cid}`}
+                  key={c.id}
+                  href={`/classes/${c.id}`}
                   className="rounded-md border px-2 py-1 text-sm hover:bg-accent"
                 >
-                  {getClasse(cid)?.nom}
+                  {c.nom}
                 </Link>
               ))}
             </div>
@@ -143,7 +129,7 @@ function EnseignantDialog({
             Fermer
           </Button>
           <Button onClick={() => setSaved(true)} disabled={saved}>
-            {saved ? 'EnregistrÃ©' : 'Enregistrer'}
+            {saved ? 'Enregistré' : 'Enregistrer'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -151,7 +137,13 @@ function EnseignantDialog({
   )
 }
 
-export function EnseignantsTable() {
+export function EnseignantsTable({
+  enseignants,
+  matieres,
+}: {
+  enseignants: Enseignant[]
+  matieres: MatiereRef[]
+}) {
   const [q, setQ] = useState('')
   const [matiereId, setMatiereId] = useState('toutes')
   const [statut, setStatut] = useState('actif')
@@ -164,12 +156,11 @@ export function EnseignantsTable() {
         `${t.prenoms} ${t.nom}`.toLowerCase().includes(term) ||
         t.matricule.toLowerCase().includes(term) ||
         t.email.toLowerCase().includes(term)
-      const matchMatiere =
-        matiereId === 'toutes' || t.matieres.includes(matiereId)
+      const matchMatiere = matiereId === 'toutes' || t.matiereIds.includes(matiereId)
       const matchStatut = statut === 'tous' || t.statut === statut
       return matchTerm && matchMatiere && matchStatut
     })
-  }, [q, matiereId, statut])
+  }, [enseignants, q, matiereId, statut])
 
   return (
     <Card>
@@ -187,10 +178,10 @@ export function EnseignantsTable() {
           </div>
           <Select value={matiereId} onValueChange={(value) => setMatiereId(value ?? '')}>
             <SelectTrigger className="w-full sm:w-48">
-              <SelectValue placeholder="MatiÃ¨re" />
+              <SelectValue placeholder="Matière" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="toutes">Toutes les matiÃ¨res</SelectItem>
+              <SelectItem value="toutes">Toutes les matières</SelectItem>
               {matieres.map((m) => (
                 <SelectItem key={m.id} value={m.id}>
                   {m.nom}
@@ -205,7 +196,8 @@ export function EnseignantsTable() {
             <SelectContent>
               <SelectItem value="tous">Tous</SelectItem>
               <SelectItem value="actif">Actifs</SelectItem>
-              <SelectItem value="archive">ArchivÃ©s</SelectItem>
+              <SelectItem value="conge">En congé</SelectItem>
+              <SelectItem value="archive">Archivés</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -218,10 +210,11 @@ export function EnseignantsTable() {
           <div className="rounded-lg border border-dashed">
             <EmptyState
               icon={GraduationCap}
-              title="Aucun enseignant trouvÃ©"
+              title="Aucun enseignant trouvé"
               description="Commencez par ajouter votre premier enseignant."
             >
               <EnseignantDialog
+                matieres={matieres}
                 trigger={
                   <Button>
                     <Plus className="size-4" data-icon="inline-start" />
@@ -238,7 +231,7 @@ export function EnseignantsTable() {
                 <TableRow>
                   <TableHead>Enseignant</TableHead>
                   <TableHead>Matricule</TableHead>
-                  <TableHead>MatiÃ¨res</TableHead>
+                  <TableHead>Matières</TableHead>
                   <TableHead>Classes</TableHead>
                   <TableHead>Contact</TableHead>
                   <TableHead className="w-24" />
@@ -251,7 +244,7 @@ export function EnseignantsTable() {
                       <div className="flex items-center gap-3">
                         <Avatar className="size-9">
                           <AvatarFallback className="bg-secondary text-xs font-medium text-secondary-foreground">
-                            {`${t.prenoms[0]}${t.nom[0]}`.toUpperCase()}
+                            {`${t.prenoms[0] ?? ''}${t.nom[0] ?? ''}`.toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
@@ -259,36 +252,32 @@ export function EnseignantsTable() {
                             {t.prenoms} {t.nom}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            Depuis{' '}
-                            {new Date(t.dateEmbauche).toLocaleDateString('fr-FR', {
-                              month: 'long',
-                              year: 'numeric',
-                            })}
+                            {t.dateEmbauche
+                              ? `Depuis ${new Date(t.dateEmbauche).toLocaleDateString('fr-FR', {
+                                  month: 'long',
+                                  year: 'numeric',
+                                })}`
+                              : 'Date d\u2019embauche non renseignée'}
                           </span>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {t.matricule}
-                    </TableCell>
+                    <TableCell className="font-mono text-xs">{t.matricule}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {t.matieres.map((mid) => (
-                          <Badge key={mid} variant="secondary">
-                            {getMatiere(mid)?.code}
+                        {t.matieres.map((m) => (
+                          <Badge key={m.id} variant="secondary">
+                            {m.code}
                           </Badge>
                         ))}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {t.classes.map((cid) => (
-                          <Link key={cid} href={`/classes/${cid}`}>
-                            <Badge
-                              variant="outline"
-                              className="transition-colors hover:bg-accent"
-                            >
-                              {getClasse(cid)?.nom}
+                        {t.classes.map((c) => (
+                          <Link key={c.id} href={`/classes/${c.id}`}>
+                            <Badge variant="outline" className="transition-colors hover:bg-accent">
+                              {c.nom}
                             </Badge>
                           </Link>
                         ))}
@@ -309,6 +298,7 @@ export function EnseignantsTable() {
                     <TableCell>
                       <EnseignantDialog
                         enseignant={t}
+                        matieres={matieres}
                         trigger={
                           <Button variant="ghost" size="sm">
                             Consulter
@@ -328,4 +318,3 @@ export function EnseignantsTable() {
 }
 
 export { EnseignantDialog }
-
