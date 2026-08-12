@@ -27,7 +27,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { liensParente, type Parent } from '@/lib/queries/parents'
+import type { Parent } from '@/lib/queries/parents'
+
+const liensParente = ['Père', 'Mère', 'Tuteur', 'Tutrice', 'Autre'] as const
 
 function initials(prenoms: string, nom: string) {
   return `${prenoms[0] ?? ''}${nom[0] ?? ''}`.toUpperCase()
