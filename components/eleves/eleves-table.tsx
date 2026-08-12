@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -24,15 +24,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { classes, eleves, getClasse } from '@/lib/data'
-
-const niveaux = Array.from(new Set(classes.map((c) => c.niveau)))
+import type { Eleve } from '@/lib/queries/eleves'
 
 function initials(prenoms: string, nom: string) {
   return `${prenoms[0] ?? ''}${nom[0] ?? ''}`.toUpperCase()
 }
 
-export function ElevesTable() {
+export function ElevesTable({ eleves, niveaux }: { eleves: Eleve[]; niveaux: string[] }) {
   const router = useRouter()
   const [q, setQ] = useState('')
   const [niveau, setNiveau] = useState('tous')
@@ -41,17 +39,15 @@ export function ElevesTable() {
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase()
     return eleves.filter((e) => {
-      if (e.statut === 'archive') return false
       const matchTerm =
         !term ||
         `${e.prenoms} ${e.nom}`.toLowerCase().includes(term) ||
         e.matricule.toLowerCase().includes(term)
       const matchNiveau = niveau === 'tous' || e.niveau === niveau
-      const matchPaiement =
-        statutPaiement === 'tous' || e.statutPaiement === statutPaiement
+      const matchPaiement = statutPaiement === 'tous' || e.statutPaiement === statutPaiement
       return matchTerm && matchNiveau && matchPaiement
     })
-  }, [q, niveau, statutPaiement])
+  }, [eleves, q, niveau, statutPaiement])
 
   return (
     <Card>
@@ -85,7 +81,7 @@ export function ElevesTable() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="tous">Tout paiement</SelectItem>
-              <SelectItem value="a_jour">Ã€ jour</SelectItem>
+              <SelectItem value="a_jour">À jour</SelectItem>
               <SelectItem value="partiel">Partiel</SelectItem>
               <SelectItem value="retard">En retard</SelectItem>
             </SelectContent>
@@ -93,25 +89,24 @@ export function ElevesTable() {
         </div>
 
         <div className="text-sm text-muted-foreground">
-          {filtered.length} Ã©lÃ¨ve{filtered.length > 1 ? 's' : ''}
+          {filtered.length} élève{filtered.length > 1 ? 's' : ''}
         </div>
 
         <div className="overflow-hidden rounded-lg border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Ã‰lÃ¨ve</TableHead>
-                <TableHead>Matricule</TableHead>
-                <TableHead>Classe</TableHead>
-                <TableHead>Moyenne</TableHead>
-                <TableHead>Paiement</TableHead>
-                <TableHead className="w-10" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filtered.map((e) => {
-                const classe = getClasse(e.classeId)
-                return (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Élève</TableHead>
+                  <TableHead>Matricule</TableHead>
+                  <TableHead>Classe</TableHead>
+                  <TableHead>Moyenne</TableHead>
+                  <TableHead>Paiement</TableHead>
+                  <TableHead className="w-10" />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filtered.map((e) => (
                   <TableRow
                     key={e.id}
                     className="cursor-pointer"
@@ -129,20 +124,17 @@ export function ElevesTable() {
                             {e.prenoms} {e.nom}
                           </span>
                           <span className="text-xs text-muted-foreground">
-                            {e.sexe === 'F' ? 'Fille' : 'GarÃ§on'} â€”{' '}
-                            {e.nationalite}
+                            {e.sexe === 'F' ? 'Fille' : 'Garçon'} — {e.nationalite}
                           </span>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {e.matricule}
-                    </TableCell>
+                    <TableCell className="font-mono text-xs">{e.matricule}</TableCell>
                     <TableCell>
-                      <Badge variant="outline">{classe?.nom ?? 'â€”'}</Badge>
+                      <Badge variant="outline">{e.classeNom ?? '—'}</Badge>
                     </TableCell>
                     <TableCell className="tabular-nums">
-                      {e.moyenne > 0 ? `${e.moyenne.toFixed(2)}/20` : 'â€”'}
+                      {e.moyenne > 0 ? `${e.moyenne.toFixed(2)}/20` : '—'}
                     </TableCell>
                     <TableCell>
                       <PaymentBadge statut={e.statutPaiement} />
@@ -151,13 +143,12 @@ export function ElevesTable() {
                       <ChevronRight className="size-4 text-muted-foreground" />
                     </TableCell>
                   </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </CardContent>
     </Card>
   )
 }
-
