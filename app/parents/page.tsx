@@ -4,16 +4,18 @@ import { PageHeader } from '@/components/page-header'
 import { StatCard } from '@/components/stat-card'
 import { Button } from '@/components/ui/button'
 import { ParentsList, ParentFormDialog } from '@/components/parents/parents-list'
-import { eleves, parents } from '@/lib/data'
+import { getParents } from '@/lib/queries/parents'
+import { getEleves } from '@/lib/queries/eleves'
 
 export const metadata = { title: 'Parents & Responsables — GESTION-SCOLAIRE' }
 
-export default function ParentsPage() {
+export default async function ParentsPage() {
+  const [parents, eleves] = await Promise.all([getParents(), getEleves()])
+
+  const elevesAvecResponsableIds = new Set(parents.flatMap((p) => p.enfants.map((e) => e.id)))
   const principaux = parents.filter((p) => p.principal).length
-  const elevesAvecResponsable = eleves.filter((e) => e.parentIds.length > 0).length
-  const elevesSansResponsable = eleves.filter(
-    (e) => e.statut !== 'archive' && e.parentIds.length === 0,
-  ).length
+  const elevesAvecResponsable = eleves.filter((e) => elevesAvecResponsableIds.has(e.id)).length
+  const elevesSansResponsable = eleves.filter((e) => !elevesAvecResponsableIds.has(e.id)).length
 
   return (
     <>
@@ -55,7 +57,7 @@ export default function ParentsPage() {
         />
       </div>
 
-      <ParentsList />
+      <ParentsList parents={parents} />
     </>
   )
 }
