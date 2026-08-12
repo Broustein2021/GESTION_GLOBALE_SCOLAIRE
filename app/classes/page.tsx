@@ -4,21 +4,21 @@ import { PageHeader } from '@/components/page-header'
 import { StatCard } from '@/components/stat-card'
 import { Button } from '@/components/ui/button'
 import { ClassesGrid } from '@/components/classes/classes-grid'
-import { classes, etablissement, niveaux } from '@/lib/data'
+import { getClasses, getNiveaux, cycles } from '@/lib/queries/classes'
 
 export const metadata = { title: 'Classes & Niveaux — GESTION-SCOLAIRE' }
 
-export default function ClassesPage() {
+export default async function ClassesPage() {
+  const classes = await getClasses()
+  const niveaux = getNiveaux(classes)
+
   const effectif = classes.reduce((s, c) => s + c.effectif, 0)
   const capacite = classes.reduce((s, c) => s + c.capacite, 0)
-  const occupation = Math.round((effectif / capacite) * 100)
+  const occupation = capacite > 0 ? Math.round((effectif / capacite) * 100) : 0
 
   return (
     <>
-      <PageHeader
-        title="Classes & Niveaux"
-        description={`Organisation pédagogique — ${etablissement.anneeScolaire}`}
-      >
+      <PageHeader title="Classes & Niveaux" description="Organisation pédagogique">
         <Button>
           <Plus className="size-4" data-icon="inline-start" />
           Nouvelle classe
@@ -50,7 +50,7 @@ export default function ClassesPage() {
         />
       </div>
 
-      <ClassesGrid />
+      <ClassesGrid classes={classes} cycles={cycles} niveaux={niveaux} />
     </>
   )
 }

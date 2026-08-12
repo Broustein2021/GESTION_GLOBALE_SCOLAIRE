@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -16,9 +16,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { classes, cycles, getEnseignant, niveaux } from '@/lib/data'
+import type { Classe } from '@/lib/queries/classes'
 
-export function ClassesGrid() {
+type ClassesGridProps = {
+  classes: Classe[]
+  cycles: readonly string[]
+  niveaux: string[]
+}
+
+export function ClassesGrid({ classes, cycles, niveaux }: ClassesGridProps) {
   const [q, setQ] = useState('')
   const [cycle, setCycle] = useState('tous')
   const [niveau, setNiveau] = useState('tous')
@@ -34,7 +40,7 @@ export function ClassesGrid() {
       const matchNiveau = niveau === 'tous' || c.niveau === niveau
       return matchTerm && matchCycle && matchNiveau
     })
-  }, [q, cycle, niveau])
+  }, [classes, q, cycle, niveau])
 
   return (
     <div className="flex flex-col gap-4">
@@ -84,16 +90,15 @@ export function ClassesGrid() {
           <CardContent className="p-0">
             <EmptyState
               icon={School}
-              title="Aucune classe trouvÃ©e"
-              description="Aucune classe ne correspond aux filtres sÃ©lectionnÃ©s."
+              title="Aucune classe trouvée"
+              description="Aucune classe ne correspond aux filtres sélectionnés."
             />
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {filtered.map((c) => {
-            const prof = getEnseignant(c.profPrincipalId)
-            const taux = Math.round((c.effectif / c.capacite) * 100)
+            const taux = c.capacite > 0 ? Math.round((c.effectif / c.capacite) * 100) : 0
             return (
               <Link
                 key={c.id}
@@ -132,7 +137,7 @@ export function ClassesGrid() {
                       <div className="flex items-center gap-2">
                         <User className="size-4 shrink-0 text-muted-foreground" />
                         <span className="truncate">
-                          {prof ? `${prof.prenoms} ${prof.nom}` : 'Non affectÃ©'}
+                          {c.profPrincipalNom ?? 'Non affecté'}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
@@ -150,4 +155,3 @@ export function ClassesGrid() {
     </div>
   )
 }
-

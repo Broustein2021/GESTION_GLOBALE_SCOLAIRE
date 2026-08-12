@@ -1,0 +1,67 @@
+import { createClient } from '@/lib/supabase/server'
+
+export type SchoolContext = {
+  schoolId: string
+  academicYearId: string
+}
+
+/**
+ * Résout l'école active et l'année scolaire courante de l'utilisateur
+ * connecté, côté serveur. Réutilisable par tous les adapters de données
+ * réelles (classes, élèves, enseignants, finances, notes...).
+ *
+ * Retourne null si l'utilisateur n'a pas d'établissement actif
+ * (redirection /onboarding déjà gérée par le proxy.ts).
+ */
+export async function getCurrentSchoolContext(): Promise<SchoolContext | null> {
+  const supabase = await createClient()
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) return null
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!profile) return null
+
+  const { data: membership } = await supabase
+    .from('school_members')
+    .select('school_id')
+    .eq('profile_id', profile.id)
+    .eq('status', 'active')
+    .order('created_at', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (!membership) return null
+
+  const { data: currentYear } = await supabase
+    .from('academic_years')
+    .select('id')
+    .eq('school_id', membership.school_id)
+    .eq('is_current', true)
+    .maybeSingle()
+
+  // Si aucune année n'est marquée "courante", on retombe sur la plus récente.
+  const academicYearId =
+    currentYear?.id ??
+    (
+      await supabase
+        .from('academic_years')
+        .select('id')
+        .eq('school_id', membership.school_id)
+        .order('starts_on', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    ).data?.id
+
+  if (!academicYearId) return null
+
+  return { schoolId: membership.school_id, academicYearId }
+}

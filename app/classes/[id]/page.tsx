@@ -24,19 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  classes,
-  evaluations,
-  getClasse,
-  getElevesByClasse,
-  getEnseignant,
-  getMatiere,
-  getMatieresByCycle,
-} from '@/lib/data'
-
-export function generateStaticParams() {
-  return classes.map((c) => ({ id: c.id }))
-}
+import { getClassDetail } from '@/lib/queries/classes'
 
 export default async function FicheClassePage({
   params,
@@ -44,19 +32,13 @@ export default async function FicheClassePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const classe = getClasse(id)
+  const classe = await getClassDetail(id)
   if (!classe) notFound()
 
-  const eleves = getElevesByClasse(classe.id)
-  const prof = getEnseignant(classe.profPrincipalId)
-  const matieresClasse = getMatieresByCycle(classe.cycle)
-  const evals = evaluations.filter((ev) => ev.classeId === classe.id)
-  const taux = Math.round((classe.effectif / classe.capacite) * 100)
-  const notes = eleves.filter((e) => e.moyenne > 0)
+  const taux = classe.capacite > 0 ? Math.round((classe.effectif / classe.capacite) * 100) : 0
+  const notes = classe.eleves.filter((e) => e.moyenne > 0)
   const moyenneClasse =
-    notes.length > 0
-      ? notes.reduce((s, e) => s + e.moyenne, 0) / notes.length
-      : 0
+    notes.length > 0 ? notes.reduce((s, e) => s + e.moyenne, 0) / notes.length : 0
 
   return (
     <>
@@ -70,9 +52,7 @@ export default async function FicheClassePage({
       <Card>
         <CardContent className="flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-2">
-            <h1 className="text-xl font-semibold tracking-tight">
-              {classe.nom}
-            </h1>
+            <h1 className="text-xl font-semibold tracking-tight">{classe.nom}</h1>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{classe.cycle}</Badge>
               <Badge variant="outline">Niveau {classe.niveau}</Badge>
@@ -85,15 +65,20 @@ export default async function FicheClassePage({
           <div className="flex items-center gap-3 rounded-lg border p-3">
             <Avatar className="size-10">
               <AvatarFallback className="bg-secondary text-xs text-secondary-foreground">
-                {prof ? `${prof.prenoms[0]}${prof.nom[0]}`.toUpperCase() : '—'}
+                {classe.profPrincipalNom
+                  ? classe.profPrincipalNom
+                      .split(' ')
+                      .map((p) => p[0])
+                      .join('')
+                      .slice(0, 2)
+                      .toUpperCase()
+                  : '—'}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">
-                Professeur principal
-              </span>
+              <span className="text-xs text-muted-foreground">Professeur principal</span>
               <span className="text-sm font-medium">
-                {prof ? `${prof.prenoms} ${prof.nom}` : 'Non affecté'}
+                {classe.profPrincipalNom ?? 'Non affecté'}
               </span>
             </div>
           </div>
@@ -107,15 +92,10 @@ export default async function FicheClassePage({
           hint={`${classe.capacite - classe.effectif} places disponibles`}
           icon={Users}
         />
-        <StatCard
-          label="Taux d'occupation"
-          value={`${taux}%`}
-          icon={Gauge}
-          accent="sky"
-        />
+        <StatCard label="Taux d'occupation" value={`${taux}%`} icon={Gauge} accent="sky" />
         <StatCard
           label="Matières enseignées"
-          value={matieresClasse.length}
+          value={classe.matieres.length}
           icon={BookOpen}
           accent="amber"
         />
@@ -140,12 +120,11 @@ export default async function FicheClassePage({
             <CardHeader>
               <CardTitle>Liste des élèves</CardTitle>
               <CardDescription>
-                {eleves.length} élève(s) enregistré(s) dans la base de démonstration
-                pour cette classe
+                {classe.eleves.length} élève(s) inscrit(s) dans cette classe
               </CardDescription>
             </CardHeader>
             <CardContent className="px-0">
-              {eleves.length === 0 ? (
+              {classe.eleves.length === 0 ? (
                 <EmptyState
                   icon={Users}
                   title="Aucun élève affecté"
@@ -163,7 +142,7 @@ export default async function FicheClassePage({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {eleves.map((e) => (
+                      {classe.eleves.map((e) => (
                         <TableRow key={e.id}>
                           <TableCell>
                             <Link
@@ -173,9 +152,7 @@ export default async function FicheClassePage({
                               {e.prenoms} {e.nom}
                             </Link>
                           </TableCell>
-                          <TableCell className="font-mono text-xs">
-                            {e.matricule}
-                          </TableCell>
+                          <TableCell className="font-mono text-xs">{e.matricule}</TableCell>
                           <TableCell className="text-right tabular-nums">
                             {e.moyenne > 0 ? `${e.moyenne.toFixed(2)}/20` : '—'}
                           </TableCell>
@@ -196,9 +173,7 @@ export default async function FicheClassePage({
           <Card>
             <CardHeader>
               <CardTitle>Matières du cycle {classe.cycle}</CardTitle>
-              <CardDescription>
-                Coefficients et enseignants affectés
-              </CardDescription>
+              <CardDescription>Coefficients et enseignants affectés à cette classe</CardDescription>
             </CardHeader>
             <CardContent className="px-0">
               <div className="overflow-x-auto">
@@ -212,26 +187,12 @@ export default async function FicheClassePage({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {matieresClasse.map((m) => (
+                    {classe.matieres.map((m) => (
                       <TableRow key={m.id}>
                         <TableCell className="font-medium">{m.nom}</TableCell>
-                        <TableCell className="font-mono text-xs">
-                          {m.code}
-                        </TableCell>
-                        <TableCell className="text-center tabular-nums">
-                          {m.coefficient}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {m.enseignantIds.length === 0
-                            ? 'Non affecté'
-                            : m.enseignantIds
-                                .map((tid) => {
-                                  const t = getEnseignant(tid)
-                                  return t ? `${t.prenoms} ${t.nom}` : ''
-                                })
-                                .filter(Boolean)
-                                .join(', ')}
-                        </TableCell>
+                        <TableCell className="font-mono text-xs">{m.code}</TableCell>
+                        <TableCell className="text-center tabular-nums">{m.coefficient}</TableCell>
+                        <TableCell className="text-muted-foreground">{m.enseignants}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -247,7 +208,7 @@ export default async function FicheClassePage({
               <CardTitle>Évaluations de la classe</CardTitle>
             </CardHeader>
             <CardContent className="px-0">
-              {evals.length === 0 ? (
+              {classe.evaluations.length === 0 ? (
                 <EmptyState
                   icon={BookOpen}
                   title="Aucune évaluation planifiée"
@@ -265,18 +226,14 @@ export default async function FicheClassePage({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {evals.map((ev) => (
+                      {classe.evaluations.map((ev) => (
                         <TableRow key={ev.id}>
-                          <TableCell className="font-medium">
-                            {ev.libelle}
-                          </TableCell>
-                          <TableCell>{getMatiere(ev.matiereId)?.nom}</TableCell>
+                          <TableCell className="font-medium">{ev.libelle}</TableCell>
+                          <TableCell>{ev.matiereNom}</TableCell>
                           <TableCell className="whitespace-nowrap">
-                            {new Date(ev.date).toLocaleDateString('fr-FR')}
+                            {ev.date ? new Date(ev.date).toLocaleDateString('fr-FR') : '—'}
                           </TableCell>
-                          <TableCell className="text-center tabular-nums">
-                            /{ev.bareme}
-                          </TableCell>
+                          <TableCell className="text-center tabular-nums">/{ev.bareme}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
