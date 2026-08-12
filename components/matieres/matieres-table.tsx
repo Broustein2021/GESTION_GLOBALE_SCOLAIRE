@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -34,7 +34,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { cycles, getEnseignant, matieres, type Matiere } from '@/lib/data'
+import type { Matiere } from '@/lib/queries/matieres'
 
 function MatiereDialog({
   matiere,
@@ -57,13 +57,11 @@ function MatiereDialog({
       <DialogTrigger render={trigger as React.ReactElement} />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {matiere ? `MatiÃ¨re â€” ${matiere.nom}` : 'Nouvelle matiÃ¨re'}
-          </DialogTitle>
+          <DialogTitle>{matiere ? `Matière — ${matiere.nom}` : 'Nouvelle matière'}</DialogTitle>
           <DialogDescription>
             {saved
-              ? 'EnregistrÃ© en mode maquette â€” les donnÃ©es ne sont pas encore persistÃ©es.'
-              : 'Code, libellÃ©, coefficient et cycle concernÃ©.'}
+              ? 'Enregistré — la création réelle sera branchée au module Matières.'
+              : 'Code, libellé, coefficient et cycle concerné.'}
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -82,25 +80,19 @@ function MatiereDialog({
             />
           </div>
           <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label htmlFor="m-nom">LibellÃ©</Label>
-            <Input
-              id="m-nom"
-              defaultValue={matiere?.nom}
-              placeholder="MathÃ©matiques"
-            />
+            <Label htmlFor="m-nom">Libellé</Label>
+            <Input id="m-nom" defaultValue={matiere?.nom} placeholder="Mathématiques" />
           </div>
           <div className="flex flex-col gap-1.5 sm:col-span-2">
             <Label htmlFor="m-cycle">Cycle</Label>
-            <Select defaultValue={matiere?.cycle ?? 'CollÃ¨ge'}>
+            <Select defaultValue={matiere?.cycle ?? 'Collège'}>
               <SelectTrigger id="m-cycle">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {cycles.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
+                <SelectItem value="Primaire">Primaire</SelectItem>
+                <SelectItem value="Collège">Collège</SelectItem>
+                <SelectItem value="Lycée">Lycée</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -113,7 +105,7 @@ function MatiereDialog({
             </Button>
           ) : null}
           <Button onClick={() => setSaved(true)} disabled={saved}>
-            {saved ? 'EnregistrÃ©' : 'Enregistrer'}
+            {saved ? 'Enregistré' : 'Enregistrer'}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -121,7 +113,13 @@ function MatiereDialog({
   )
 }
 
-export function MatieresTable() {
+export function MatieresTable({
+  matieres,
+  cycles,
+}: {
+  matieres: Matiere[]
+  cycles: readonly string[]
+}) {
   const [q, setQ] = useState('')
   const [cycle, setCycle] = useState('tous')
 
@@ -129,13 +127,11 @@ export function MatieresTable() {
     const term = q.trim().toLowerCase()
     return matieres.filter((m) => {
       const matchTerm =
-        !term ||
-        m.nom.toLowerCase().includes(term) ||
-        m.code.toLowerCase().includes(term)
+        !term || m.nom.toLowerCase().includes(term) || m.code.toLowerCase().includes(term)
       const matchCycle = cycle === 'tous' || m.cycle === cycle
       return matchTerm && matchCycle
     })
-  }, [q, cycle])
+  }, [matieres, q, cycle])
 
   return (
     <Card>
@@ -146,9 +142,9 @@ export function MatieresTable() {
             <Input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Rechercher une matiÃ¨re..."
+              placeholder="Rechercher une matière..."
               className="pl-8"
-              aria-label="Rechercher une matiÃ¨re"
+              aria-label="Rechercher une matière"
             />
           </div>
           <Select value={cycle} onValueChange={(value) => setCycle(value ?? '')}>
@@ -170,14 +166,14 @@ export function MatieresTable() {
           <div className="rounded-lg border border-dashed">
             <EmptyState
               icon={BookOpen}
-              title="Aucune matiÃ¨re trouvÃ©e"
-              description="CrÃ©ez votre premiÃ¨re matiÃ¨re pour organiser les Ã©valuations."
+              title="Aucune matière trouvée"
+              description="Créez votre première matière pour organiser les évaluations."
             >
               <MatiereDialog
                 trigger={
                   <Button>
                     <Plus className="size-4" data-icon="inline-start" />
-                    CrÃ©er une matiÃ¨re
+                    Créer une matière
                   </Button>
                 }
               />
@@ -189,10 +185,10 @@ export function MatieresTable() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Code</TableHead>
-                  <TableHead>MatiÃ¨re</TableHead>
+                  <TableHead>Matière</TableHead>
                   <TableHead className="text-center">Coefficient</TableHead>
                   <TableHead>Cycle</TableHead>
-                  <TableHead>Enseignants affectÃ©s</TableHead>
+                  <TableHead>Enseignants affectés</TableHead>
                   <TableHead className="w-24" />
                 </TableRow>
               </TableHeader>
@@ -205,32 +201,24 @@ export function MatieresTable() {
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">{m.nom}</TableCell>
-                    <TableCell className="text-center tabular-nums">
-                      {m.coefficient}
-                    </TableCell>
+                    <TableCell className="text-center tabular-nums">{m.coefficient}</TableCell>
                     <TableCell>
                       <Badge variant="outline">{m.cycle}</Badge>
                     </TableCell>
                     <TableCell>
-                      {m.enseignantIds.length === 0 ? (
-                        <span className="text-sm text-muted-foreground">
-                          Non affectÃ©e
-                        </span>
+                      {m.enseignants.length === 0 ? (
+                        <span className="text-sm text-muted-foreground">Non affectée</span>
                       ) : (
                         <div className="flex flex-wrap gap-2">
-                          {m.enseignantIds.map((tid) => {
-                            const t = getEnseignant(tid)
-                            if (!t) return null
-                            return (
-                              <Link
-                                key={tid}
-                                href="/enseignants"
-                                className="text-sm underline-offset-4 hover:underline"
-                              >
-                                {t.prenoms} {t.nom}
-                              </Link>
-                            )
-                          })}
+                          {m.enseignants.map((t) => (
+                            <Link
+                              key={t.id}
+                              href="/enseignants"
+                              className="text-sm underline-offset-4 hover:underline"
+                            >
+                              {t.prenoms} {t.nom}
+                            </Link>
+                          ))}
                         </div>
                       )}
                     </TableCell>
@@ -256,4 +244,3 @@ export function MatieresTable() {
 }
 
 export { MatiereDialog }
-

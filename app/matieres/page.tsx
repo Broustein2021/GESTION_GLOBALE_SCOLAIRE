@@ -4,11 +4,14 @@ import { PageHeader } from '@/components/page-header'
 import { StatCard } from '@/components/stat-card'
 import { Button } from '@/components/ui/button'
 import { MatieresTable, MatiereDialog } from '@/components/matieres/matieres-table'
-import { matieres } from '@/lib/data'
+import { getMatieres } from '@/lib/queries/matieres'
+import { cycles } from '@/lib/queries/classes'
 
 export const metadata = { title: 'Matières — GESTION-SCOLAIRE' }
 
-export default function MatieresPage() {
+export default async function MatieresPage() {
+  const matieres = await getMatieres()
+
   const totalCoef = matieres.reduce((s, m) => s + m.coefficient, 0)
   const college = matieres.filter((m) => m.cycle === 'Collège').length
   const primaire = matieres.filter((m) => m.cycle === 'Primaire').length
@@ -38,21 +41,11 @@ export default function MatieresPage() {
           icon={Sigma}
           accent="sky"
         />
-        <StatCard
-          label="Cycle Collège"
-          value={college}
-          icon={Layers}
-          accent="amber"
-        />
-        <StatCard
-          label="Cycle Primaire"
-          value={primaire}
-          icon={Layers}
-          accent="rose"
-        />
+        <StatCard label="Cycle Collège" value={college} icon={Layers} accent="amber" />
+        <StatCard label="Cycle Primaire" value={primaire} icon={Layers} accent="rose" />
       </div>
 
-      <MatieresTable />
+      <MatieresTable matieres={matieres} cycles={cycles} />
     </>
   )
 }
